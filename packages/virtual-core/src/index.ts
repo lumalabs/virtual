@@ -17,7 +17,7 @@ export interface ScrollToOptions {
 
 type ScrollToOffsetOptions = ScrollToOptions
 
-type ScrollToIndexOptions = ScrollToOptions & {adjustments?: number}
+type ScrollToIndexOptions = ScrollToOptions & { adjustments?: number }
 
 export interface Range {
   startIndex: number
@@ -1068,7 +1068,11 @@ export class Virtualizer<
 
   scrollToIndex = (
     index: number,
-    { align: initialAlign = 'auto', behavior, adjustments }: ScrollToIndexOptions = {},
+    {
+      align: initialAlign = 'auto',
+      behavior,
+      adjustments,
+    }: ScrollToIndexOptions = {},
   ) => {
     if (behavior === 'smooth' && this.isDynamicMode()) {
       console.warn(
@@ -1105,7 +1109,9 @@ export class Virtualizer<
             return
           }
 
-          if (!approxEqual(afterInfo[0] + (adjustments ?? 0), currentOffset)) {
+          const adjustmentsToApply =
+            afterInfo[1] === 'auto' ? 0 : (adjustments ?? 0)
+          if (!approxEqual(afterInfo[0] + adjustmentsToApply, currentOffset)) {
             scheduleRetry(align)
           }
         }
