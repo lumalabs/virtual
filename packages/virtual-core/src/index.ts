@@ -17,7 +17,7 @@ export interface ScrollToOptions {
 
 type ScrollToOffsetOptions = ScrollToOptions
 
-type ScrollToIndexOptions = ScrollToOptions
+type ScrollToIndexOptions = ScrollToOptions & {adjustments?: number}
 
 export interface Range {
   startIndex: number
@@ -1068,7 +1068,7 @@ export class Virtualizer<
 
   scrollToIndex = (
     index: number,
-    { align: initialAlign = 'auto', behavior }: ScrollToIndexOptions = {},
+    { align: initialAlign = 'auto', behavior, adjustments }: ScrollToIndexOptions = {},
   ) => {
     if (behavior === 'smooth' && this.isDynamicMode()) {
       console.warn(
@@ -1091,7 +1091,7 @@ export class Virtualizer<
         return
       }
       const [offset, align] = offsetInfo
-      this._scrollToOffset(offset, { adjustments: undefined, behavior })
+      this._scrollToOffset(offset, { adjustments, behavior })
 
       this.targetWindow.requestAnimationFrame(() => {
         const verify = () => {
@@ -1105,7 +1105,7 @@ export class Virtualizer<
             return
           }
 
-          if (!approxEqual(afterInfo[0], currentOffset)) {
+          if (!approxEqual(afterInfo[0] + (adjustments ?? 0), currentOffset)) {
             scheduleRetry(align)
           }
         }
